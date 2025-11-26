@@ -119,14 +119,15 @@ class SunganRiverWaterQualityAnalyzer:
                 return rating
         return "Undefined"
 
-    def assess_parameter_quality(self, parameter, value):
-        if parameter in self.standards:
-            min_std, max_std = self.standards[parameter]
-            if min_std <= value <= max_std:
-                return "Within Standard", "✓"
-            else:
-                return "Exceeds Standard", "✗"
-        return "No Standard", "-"
+    def assess_parameter_quality(param, value):
+    std_min, std_max = self.standards[param]
+    if value < std_min:
+        return "Below Standard", "⚠️"
+    elif value > std_max:
+        return "Exceeds Standard", "❌"
+    else:
+        return "Within Standard", "✅"
+
 
     def predict_all_parameters(self, distance):
         predictions = {
