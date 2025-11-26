@@ -58,27 +58,24 @@ if distance > 0:  # Only show predictions and plots if user entered a distance
         # --- Key Issues Section ---
         st.subheader("Key Issues")
         issues = []
-        # Based on DENR standards
-        if preds['iron'] > analyzer.standards['iron'][1]:
-            issues.append(f"High Iron ({preds['iron']:.3f} mg/L)")
-        if preds['phosphate'] > analyzer.standards['phosphate'][1]:
-            issues.append(f"High Phosphate ({preds['phosphate']:.3f} mg/L)")
-        if preds['TDS'] > analyzer.standards['TDS'][1]:
-            issues.append(f"High TDS ({preds['TDS']:.3f} mg/L)")
-        if preds['turbidity'] > analyzer.standards['turbidity'][1]:
-            issues.append(f"High Turbidity ({preds['turbidity']:.3f} NTU)")
-        if preds['nitrate'] > analyzer.standards['nitrate'][1]:
-            issues.append(f"High Nitrate ({preds['nitrate']:.3f} mg/L)")
-        if preds['pH'] < analyzer.standards['pH'][0] or preds['pH'] > analyzer.standards['pH'][1]:
-            issues.append(f"pH out of range ({preds['pH']:.3f})")
-        if preds['DO'] < analyzer.standards['DO'][0]:
-            issues.append(f"Low DO ({preds['DO']:.3f} mg/L)")
-
+        
+        for param, val in preds.items():
+            std_min, std_max = analyzer.standards.get(param, (None, None))
+            if std_min is None:
+                continue  # No standard defined
+            
+            # Check low/high/out-of-range
+            if val < std_min:
+                issues.append(f"Low {param} ({val:.3f})")
+            elif val > std_max:
+                issues.append(f"High {param} ({val:.3f})")
+        
         if issues:
             for issue in issues:
                 st.markdown(f"- {issue}")
         else:
             st.markdown("✅ No major issues detected based on predicted parameters.")
+
 
 
 
